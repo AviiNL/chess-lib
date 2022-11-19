@@ -417,21 +417,33 @@ impl TryFrom<&str> for Move {
     fn try_from(m: &str) -> Result<Move, Error> {
         let m = m.to_lowercase();
 
-        let from_file = m.chars().nth(0).unwrap() as usize - 97;
-        let from_rank = m.chars().nth(1).unwrap() as usize - 49;
-        let to_file = m.chars().nth(2).unwrap() as usize - 97;
-        let to_rank = m.chars().nth(3).unwrap() as usize - 49;
+        if m.len() != 4 {
+            return Err(Error::InvalidInput);
+        }
+
+        let from_file = m.chars().nth(0).unwrap() as isize - 97;
+        let from_rank = m.chars().nth(1).unwrap() as isize - 49;
+        let to_file = m.chars().nth(2).unwrap() as isize - 97;
+        let to_rank = m.chars().nth(3).unwrap() as isize - 49;
 
         // ensure that the move is within the bounds of the board
-        if from_file > 7 || from_rank > 7 || to_file > 7 || to_rank > 7 {
-            return Err(Error::InvalidMove("Move is out of bounds".to_string()));
+        if from_file < 0
+            || from_file > 7
+            || from_rank < 0
+            || from_rank > 7
+            || to_file < 0
+            || to_file > 7
+            || to_rank < 0
+            || to_rank > 7
+        {
+            return Err(Error::InvalidInput);
         }
 
         Ok(Move {
-            from_file,
-            from_rank,
-            to_file,
-            to_rank,
+            from_file: from_file as usize,
+            from_rank: from_rank as usize,
+            to_file: to_file as usize,
+            to_rank: to_rank as usize,
         })
     }
 }

@@ -10,6 +10,7 @@ pub const DEFAULT_BOARD: &str = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w K
 
 #[derive(Debug)]
 pub enum Error {
+    InvalidInput,
     InvalidFen(String),
     InvalidMove(String),
     SaveFailed(String),
@@ -24,6 +25,7 @@ impl From<std::io::Error> for Error {
 impl Display for Error {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
+            Error::InvalidInput => write!(f, "Invalid input"),
             Error::InvalidFen(fen) => write!(f, "Invalid FEN: {}", fen),
             Error::InvalidMove(m) => write!(f, "Invalid move: {}", m),
             Error::SaveFailed(file) => write!(f, "Failed to save game to file: {}", file),
@@ -206,10 +208,6 @@ impl Board {
 
     pub fn move_piece(&mut self, data: &str) -> Result<(), Error> {
         let data = data.trim();
-
-        if data.len() != 4 {
-            return Err(Error::InvalidMove(data.to_string()));
-        }
 
         let m: Move = data.try_into()?;
 
